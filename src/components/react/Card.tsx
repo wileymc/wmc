@@ -22,7 +22,7 @@ export default function Card({ project }: ProjectCardProps) {
         href={link}
         target="_blank"
         rel="noreferrer"
-        className="group relative -mx-3 w-full transform rounded-lg px-3 py-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hoverColor"
+        className="group relative -mx-3 w-full transform rounded-lg px-3 py-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hover"
         aria-label={`${title} - ${description}`}
       >
         <div className="flex items-center justify-between text-sm font-medium tracking-tight text-title dark:text-darkTitle md:group-hover:text-primary">
@@ -38,7 +38,7 @@ export default function Card({ project }: ProjectCardProps) {
             )}
           </div>
           <RiArrowRightUpLine
-            className="ml-0.5 text-primary opacity-0 transition-opacity duration-150 md:group-hover:opacity-100"
+            className="ml-0.5 text-primary  opacity-0 transition-opacity duration-150 md:group-hover:opacity-100"
             aria-hidden="true"
           />
         </div>

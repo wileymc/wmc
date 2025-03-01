@@ -19,7 +19,7 @@ export default function BookCard({ book }: BookCardProps) {
   return (
     <div className="flex flex-col items-start py-2">
       <div
-        className="group relative -mx-3 w-full transform rounded-lg px-3 py-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hoverColor"
+        className="group relative -mx-3 w-full transform rounded-lg px-3 py-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hover"
         aria-label={`${title} by ${author} - ${description}`}
       >
         <div className="flex items-center justify-between">
@@ -34,7 +34,7 @@ export default function BookCard({ book }: BookCardProps) {
                 <h3>{title}</h3>
               </div>
               <RiArrowRightUpLine
-                className="absolute top-2 right-2 text-primary opacity-0 transition-opacity duration-150 md:group-hover:opacity-100"
+                className="absolute top-2 right-2 text-primary  opacity-0 transition-opacity duration-150 md:group-hover:opacity-100"
                 aria-hidden="true"
               />
               <p className="text-xs text-body dark:text-darkBody">

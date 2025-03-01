@@ -1,46 +1,38 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import "../styles/global.css";
 import socialsJson from "../constants/socials.json"
 import { RiArrowRightUpLine } from "react-icons/ri";
 import Card from "../components/react/Card";
-import * as FaIcons from "react-icons/fa";
-import * as MdIcons from "react-icons/md";
-import * as SiIcons from "react-icons/si";
+import { FaLinkedin, FaGithub, FaTwitter } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { SiInstagram, SiSpotify } from "react-icons/si";
 
 const socials = socialsJson;
 
 const iconComponents = {
-  // Font Awesome icons
-  linkedin: FaIcons.FaLinkedin,
-  github: FaIcons.FaGithub,
-  twitter: FaIcons.FaTwitter,
-  
-  // Material Design icons
-  email: MdIcons.MdEmail,
-  
-  // Simple Icons (for more brand icons)
-  instagram: SiIcons.SiInstagram,
-  youtube: SiIcons.SiYoutube,
-  tiktok: SiIcons.SiTiktok,
-  // Add more mappings as needed
+  linkedin: FaLinkedin,
+  github: FaGithub,
+  twitter: FaTwitter,
+  email: MdEmail,
+  instagram: SiInstagram,
+  spotify: SiSpotify,
 };
 ---
 
 <Layout>
-	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary font-bold">
+	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary  font-bold">
 		Wiley McKay Conte
 	</h1>
-	<div class="flex items-center gap-1.5 font-medium tracking-tight">
+	<div class="flex items-center gap-2 font-medium tracking-tight">
 		<h2 class="text-sm text-title dark:text-darkTitle">programming</h2>
-		<img src="/favicon.png" alt="favicon" class="mx-1 w-2 h-2"/>
+		<div class="mx-1 w-1 h-1 rounded-full bg-primary"></div>
 		<h2 class="text-sm text-title dark:text-darkTitle">music</h2>
-		<img src="/favicon.png" alt="favicon" class="mx-1 w-2 h-2"/>
+		<div class="mx-1 w-1 h-1 rounded-full bg-primary"></div>
 		<h2 class="text-sm text-title dark:text-darkTitle">movement</h2>
 	</div>
 
-	<p class="pt-4 text-sm">
-		Welcome to my website. I am the cofounder of Populist, a govtech platform that does the challenging work of sourcing, structuring, linking, and delivering high quality data about democratic elections. Our mission is to make civic information more easily accessible for both citizens and organizations.
+	<p class="pt-4 text-sm font-light">
+		Welcome to my website. I am the cofounder of <a href="https://populist.us" class="underline decoration-dotted hover:text-primary">Populist</a>, a govtech platform that does the challenging work of sourcing, structuring, linking, and delivering high quality data about democratic elections. Our mission is to make civic information more easily accessible for both citizens and organizations.
 	</p>
 
 	<div class="w-fit grid grid-cols-3 gap-2 pt-4 tracking-tight md:flex md:flex-row md:items-start">

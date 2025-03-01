@@ -26,5 +26,12 @@
     "url": "mailto:me@wileymc.com",
     "target": "_blank",
     "icon": "email"
+  },
+  {
+    "id": 6,
+    "name": "spotify",
+    "url": "https://open.spotify.com/user/1212002891?si=4f7e5412e38d4681",
+    "target": "_blank",
+    "icon": "spotify"
   }
 ]

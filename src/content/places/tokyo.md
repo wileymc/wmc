@@ -10,7 +10,7 @@ slug: "tokyo"
 
 # Shibuya
 
-> Central and busy neighborhood with major train station and lots of commerce
+Central and busy neighborhood with major train station and lots of commerce
 
 **Coffee**: Fuglen, zenta, mum coffee \
 **Ramen**: Mensho, Mannish \
@@ -23,7 +23,7 @@ slug: "tokyo"
 
 # Shimo-Kitazawa
 
-> Relaxed and walkable neighborhood with lots of vintage, cafes, and small bars
+Relaxed and walkable neighborhood with lots of vintage, cafes, and small bars
 
 **Coffee:** good spots everywhere, go for a walk! \
 **Live music**: Rpm music bar,
@@ -32,7 +32,7 @@ slug: "tokyo"
 
 # Ebisu
 
-> Trendy and posh neighborhood with hip eateries, Yebisu beer company, and Ebisu Yokocho food alley
+Trendy and posh neighborhood with hip eateries, Yebisu beer company, and Ebisu Yokocho food alley
 
 **Coffee:** [Sarutahiko](https://maps.app.goo.gl/tKnoz7eyB58LfnHG7) \
 **Onigiri**: lady inside Ebisu station, [Onigiri Ishin Ebisu](https://maps.app.goo.gl/pZc6P2cW1YuqW5bJ8) \

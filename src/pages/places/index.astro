@@ -6,7 +6,6 @@ import { Image } from "astro:assets";
 
 const allPlaces = await getCollection("places");
 
-console.log(allPlaces)
 
 allPlaces.sort((a: any, b: any) => {
 	const dateA = new Date(a.data.date);
@@ -18,16 +17,16 @@ type Place = (typeof allPlaces)[number];
 ---
 
 <Layout title="Wiley McKay Conte • places">
-	<h1 class="font-serif text-[2.5rem] tracking-tight text-primary">Places</h1>
-	<h2 class="text-base font-medium tracking-tight text-title dark:text-darkTitle">
-		curated spaces from places i've been
-	</h2>
+	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary  font-bold">Places</h1>
+    <div class="flex items-center gap-1.5 font-medium tracking-tight">
+		<h2 class="text-sm text-title dark:text-darkTitle">curated spaces from places i've been</h2>
+	</div>
 	<section class="pt-4">
         <div class="flex flex-col">
             {
                 allPlaces.map((place: Place) => (
                 <a href={`/places/${place.data.slug}`}>
-                    <div class="group relative w-full transform rounded-lg p-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hoverColor flex flex-col md:flex-row md:items-start md:gap-4">
+                    <div class="group relative w-full transform rounded-lg p-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hover flex flex-col md:flex-row md:items-start md:gap-4">
                         <div class="md:w-1/4">
                             <Image
                                 class="rounded-lg"
@@ -38,10 +37,10 @@ type Place = (typeof allPlaces)[number];
                             />
                         </div>
                         <div class="flex flex-col md:w-3/4">
-                            <h3 class="text-lg font-medium text-primary">{place.data.title}</h3>
+                            <h3 class="text-lg font-medium text-primary ">{place.data.title}</h3>
                             <p class="pt-2 text-sm">{place.data.description}</p>
                         </div>
-                        <RiArrowRightUpLine className="text-primary absolute top-2 right-2 opacity-0 transition-opacity duration-150 md:group-hover:opacity-100" />
+                        <RiArrowRightUpLine className="text-primary  absolute top-2 right-2 opacity-0 transition-opacity duration-150 md:group-hover:opacity-100" />
                     </div>
                 </a>
                 ))
