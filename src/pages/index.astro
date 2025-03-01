@@ -1,11 +1,70 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import "../styles/global.css";
+import socialsJson from "../constants/socials.json"
+import { RiArrowRightUpLine } from "react-icons/ri";
+import Card from "../components/react/Card";
+import * as FaIcons from "react-icons/fa";
+import * as MdIcons from "react-icons/md";
+import * as SiIcons from "react-icons/si";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const socials = socialsJson;
+
+const iconComponents = {
+  // Font Awesome icons
+  linkedin: FaIcons.FaLinkedin,
+  github: FaIcons.FaGithub,
+  twitter: FaIcons.FaTwitter,
+  
+  // Material Design icons
+  email: MdIcons.MdEmail,
+  
+  // Simple Icons (for more brand icons)
+  instagram: SiIcons.SiInstagram,
+  youtube: SiIcons.SiYoutube,
+  tiktok: SiIcons.SiTiktok,
+  // Add more mappings as needed
+};
 ---
 
 <Layout>
-	<Welcome />
+	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary font-bold">
+		Wiley McKay Conte
+	</h1>
+	<div class="flex items-center gap-1.5 font-medium tracking-tight">
+		<h2 class="text-sm text-title dark:text-darkTitle">programming</h2>
+		<img src="/favicon.png" alt="favicon" class="mx-1 w-2 h-2"/>
+		<h2 class="text-sm text-title dark:text-darkTitle">music</h2>
+		<img src="/favicon.png" alt="favicon" class="mx-1 w-2 h-2"/>
+		<h2 class="text-sm text-title dark:text-darkTitle">movement</h2>
+	</div>
+
+	<p class="pt-4 text-sm">
+		Welcome to my website. I am the cofounder of Populist, a govtech platform that does the challenging work of sourcing, structuring, linking, and delivering high quality data about democratic elections. Our mission is to make civic information more easily accessible for both citizens and organizations.
+	</p>
+
+	<div class="w-fit grid grid-cols-3 gap-2 pt-4 tracking-tight md:flex md:flex-row md:items-start">
+		{
+			socials.map((social) => {
+			const IconComponent = iconComponents[social.icon.toLowerCase()];
+
+			return  (
+				<a
+					href={social.url}
+					target={social.target}
+					rel={social.target === "_blank" ? "noopener noreferrer" : undefined}
+					class="group flex items-center underline-offset-4 transition duration-150 ease-in-out md:hover:text-primary md:hover:underline">
+					  {IconComponent ? <IconComponent size={14} className="mr-1.5" /> : <span>{social.name}</span>}
+					<span class="text-sm">{social.name}</span>
+					<RiArrowRightUpLine className="opacity-0 transition-opacity duration-150 md:group-hover:opacity-100" />
+				</a>
+			)
+		})
+		}
+	</div>
+
+	<section class="pt-8">
+	<h2 class="font-medium tracking-tight text-title dark:text-darkTitle">Explore</h2>
+	<Card project={{ id: 1, title: "Populist", description: "Civic engagement as a service", link: "https://populist.us" }} />
+	
 </Layout>

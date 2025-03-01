@@ -1,0 +1,30 @@
+[
+  {
+    "id": 2,
+    "name": "linkedin",
+    "url": "https://www.linkedin.com/in/wileymckay/",
+    "target": "_blank",
+    "icon": "linkedin"
+  },
+  {
+    "id": 3,
+    "name": "twitter",
+    "url": "https://x.com/wileymckayconte",
+    "target": "_blank",
+    "icon": "twitter"
+  },
+  {
+    "id": 4,
+    "name": "github",
+    "url": "https://github.com/wileymc",
+    "target": "_blank",
+    "icon": "github"
+  },
+  {
+    "id": 5,
+    "name": "email",
+    "url": "mailto:me@wileymc.com",
+    "target": "_blank",
+    "icon": "email"
+  }
+]

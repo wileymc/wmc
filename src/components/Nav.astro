@@ -1,0 +1,60 @@
+---
+const currentPath = Astro.url.pathname;
+const isHomePage = currentPath === "/";
+import { MdOutlineKeyboardBackspace } from "react-icons/md";
+---
+
+<nav class="flex items-center justify-between pb-8 tracking-tight">
+    <div>
+        {
+            isHomePage ? (
+            <css-doodle>
+              {`
+              :doodle {
+                @grid: 8 / 25px;
+                @shape: circle;
+                --s: 0;
+              }
+          
+              :doodle(:hover) {
+                --s: 1.5;
+              }
+          
+              transition: .3s @r(.6s);
+              border-radius: @pick(25% 0, 0 100%);
+              transform: scale(@r(.1, 1.25));
+              transform: translateY(calc(var(--s) * 100%));
+          
+              background: var(--color-primary);
+              opacity: @r.8;
+              `}
+            </css-doodle>
+            ) : (
+                <a
+                    href="/"
+                    target="_self"
+                    class="hover:text-primary dark:hover:text-primaryDark underline-offset-4 transition duration-150 ease-in-out hover:underline">
+                    <MdOutlineKeyboardBackspace className="-mt-0.5 inline-block" />
+                    <span>wmc</span>
+                </a>
+            )
+        }
+    </div>
+    <div class="flex items-center gap-4 transition duration-150 ease-in-out">
+        <a
+            href="/books"
+            target="_self"
+            class="hover:text-primary dark:hover:text-primaryDark  underline-offset-4 transition duration-150 ease-in-out hover:underline">
+            books
+        </a>
+        <a
+            href="/places"
+            target="_self"
+            class="hover:text-primary dark:hover:text-primaryDark underline-offset-4 transition duration-150 ease-in-out hover:underline">
+            places
+        </a>
+
+    </div>
+</nav>
+
+

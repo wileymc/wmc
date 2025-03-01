@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import "../styles/global.css";
+import booksJson from "../constants/books.json"
+import BookCard from '../components/react/BookCard';
+
+const books = booksJson;
+---
+
+<Layout>
+	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary font-bold">
+		Booklist
+	</h1>
+	<div class="flex items-center gap-1.5 font-medium tracking-tight">
+		<h2 class="text-sm text-title dark:text-darkTitle">thoughts and feels on what i've read</h2>
+	</div>
+
+    <section class="pt-8">
+        {
+            books.map((book) => (
+                <BookCard book={book} />
+            ))
+        }
+    </section>
+</Layout>

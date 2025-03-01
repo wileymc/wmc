@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bgColor: #f4f4ed;
+  --color-darkBgColor: #0a0a0a;
+  --color-primary: #2e5eaa;
+  --color-primary-alpha: #2e5eaa80;
+  --color-title: #333333;
+  --color-darkTitle: #e0e0e0;
+  --color-body: #555;
+  --color-darkBody: #ccc;
+  --color-hoverColor: #3a6fb020;
+  --color-darkHoverColor: #333;
+  --font-*: initial;
+  --font-sans: Excon, sans-serif;
+  --font-serif: Erode, serif;
+}

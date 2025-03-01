@@ -1,0 +1,70 @@
+---
+import { IoSunnyOutline, IoMoonOutline } from "react-icons/io5";
+---
+
+<button id="theme-toggle" class="hover:text-primary dark:hover:text-primaryDark underline-offset-4 transition duration-150 ease-in-out">
+    <!-- Sun icon for dark mode (shows when in dark mode) -->
+    <IoSunnyOutline id="theme-toggle-dark-icon" className="h-4 w-4 hidden dark:block transition-transform duration-150 ease-in-out transform hover:scale-110" />
+    <!-- Moon icon for light mode (shows when in light mode) -->
+    <IoMoonOutline id="theme-toggle-light-icon" className="h-4 w-4 block dark:hidden transition-transform duration-150 ease-in-out transform hover:scale-110" />
+</button>
+
+<script is:inline>
+    const STORAGE_KEY = 'theme';
+    
+    // This function will be called both on initial load and after route changes
+    function initializeThemeToggle() {
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+        
+        // Current theme logic
+        const currentTheme = localStorage.getItem(STORAGE_KEY) || 
+            (prefersDarkMode.matches ? 'dark' : 'light');
+        
+        // Apply the current theme state to the UI
+        const isDarkMode = currentTheme === 'dark';
+        document.documentElement.classList.toggle('dark', isDarkMode);
+        document.documentElement.classList.toggle('light', !isDarkMode);
+        
+        // Update icon visibility
+        if (themeToggleDarkIcon && themeToggleLightIcon) {
+            themeToggleDarkIcon.classList.toggle('hidden', !isDarkMode);
+            themeToggleLightIcon.classList.toggle('hidden', isDarkMode);
+        }
+        
+        // Remove any existing click handlers to prevent duplicates
+        if (themeToggleBtn) {
+            // Clone the button to remove all event listeners
+            const newThemeToggleBtn = themeToggleBtn.cloneNode(true);
+            if (themeToggleBtn.parentNode) {
+                themeToggleBtn.parentNode.replaceChild(newThemeToggleBtn, themeToggleBtn);
+            }
+            
+            // Add event listener to the new button
+            newThemeToggleBtn.addEventListener('click', function() {
+                const activeTheme = localStorage.getItem(STORAGE_KEY) === 'dark' ? 'light' : 'dark';
+                localStorage.setItem(STORAGE_KEY, activeTheme);
+                
+                // Re-initialize to apply changes
+                initializeThemeToggle();
+            });
+        }
+    }
+    
+    // Initialize on page load
+    initializeThemeToggle();
+    
+    // Re-initialize after Astro view transitions
+    document.addEventListener('astro:after-swap', function() {
+        initializeThemeToggle();
+    });
+    
+    // Also handle when the OS theme preference changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            initializeThemeToggle();
+        }
+    });
+</script>
