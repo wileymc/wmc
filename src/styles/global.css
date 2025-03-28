@@ -65,6 +65,8 @@ audio::-webkit-media-controls-volume-slider {
 .dark audio::-webkit-media-controls-seek-back-button,
 .dark audio::-webkit-media-controls-seek-forward-button,
 .dark audio::-webkit-media-controls-fullscreen-button,
-.dark audio::-webkit-media-controls-toggle-closed-captions-button {
+.dark audio::-webkit-media-controls-toggle-closed-captions-button,
+.dark audio::-webkit-media-settings-button,
+.dark audio::-webkit-media-controls-timeline {
   filter: invert(1) hue-rotate(180deg);
 }
