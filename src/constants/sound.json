@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Boom Bap",
+    "description": "New original cut from the CBDBs",
+    "thumbnail": "https://picsum.photos/200/300",
+    "source": "/sound/boomblack.mp3"
+  },
+  {
+    "title": "Vibey",
+    "description": "",
+    "thumbnail": "https://picsum.photos/100/300",
+    "source": "/sound/vibey.mp3"
+  }
+]

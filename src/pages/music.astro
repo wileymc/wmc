@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import "../styles/global.css";
+import soundJson from "../constants/sound.json"
+import SoundCard from '../components/react/SoundCard';
+
+const soundBites = soundJson;
+---
+
+<Layout>
+	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary  font-bold">
+		Music
+	</h1>
+	<div class="flex items-center gap-1.5 font-medium tracking-tight">
+		<h2 class="text-sm text-title dark:text-darkTitle">explorations in sound</h2>
+	</div>
+
+    <section class="pt-8">
+        {
+            soundBites.map((sound) => (
+                <SoundCard sound={sound} />
+            ))
+        }
+    </section>
+</Layout>
