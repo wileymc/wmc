@@ -2,33 +2,77 @@
 const currentPath = Astro.url.pathname;
 const isHomePage = currentPath === "/";
 import { MdOutlineKeyboardBackspace } from "react-icons/md";
+
 ---
+
+<style>
+    /* Hide the css-doodle by default */
+    css-doodle {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    
+    /* Show it when the doodle is loaded */
+    body.doodle-loaded css-doodle {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Style for the placeholder while loading */
+    .doodle-placeholder {
+      display: inline-block;
+      width: 200px;
+      height: 25px;
+      background: transparent;
+    }
+  </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create the script element
+      const doodleScript = document.createElement('script');
+      doodleScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.37.2/css-doodle.min.js';
+      
+      // When the script is loaded
+      doodleScript.onload = () => {
+        // Add the class to show all doodles
+        document.body.classList.add('doodle-loaded');
+      };
+      
+      // Append the script to the head
+      document.head.appendChild(doodleScript);
+    });
+  </script>
 
 <nav class="flex items-center justify-between pb-8 tracking-tight">
     <div>
         {
             isHomePage ? (
-            <css-doodle>
-              {`
-              :doodle {
-                @grid: 8 / 25px;
-                @shape: circle;
-                --s: 0;
-              }
-          
-              :doodle(:hover) {
-                --s: 1.5;
-              }
-          
-              transition: .3s @r(.6s);
-              border-radius: @pick(25% 0, 0 100%);
-              transform: scale(@r(.1, 1.25));
-              transform: translateY(calc(var(--s) * 100%));
-          
-              background: var(--color-primary);
-              opacity: @r.8;
-              `}
-            </css-doodle>
+            <>
+              <div class="doodle-placeholder"></div>
+              <css-doodle>
+                {`
+                :doodle {
+                  @grid: 8 / 25px;
+                  @shape: circle;
+                  --s: 0;
+                }
+            
+                :doodle(:hover) {
+                  --s: 1.5;
+                }
+            
+                transition: .3s @r(.6s);
+                border-radius: @pick(25% 0, 0 100%);
+                transform: scale(@r(.1, 1.25));
+                transform: translateY(calc(var(--s) * 100%));
+            
+                background: var(--color-primary);
+                opacity: @r.8;
+                `}
+              </css-doodle>
+            </>
             ) : (
                 <a
                     href="/"
