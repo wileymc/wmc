@@ -20,11 +20,11 @@ const iconComponents = {
 ---
 
 <Layout>
-	<h1 class="text-[1.95rem] font-serif tracking-tight text-primary  font-bold">
+	<h1 class="text-[1.75rem] font-serif tracking-tight text-primary  font-bold">
 		Wiley McKay Conte
 	</h1>
 	<div class="flex items-center gap-2 font-medium tracking-tight">
-		<h2 class="text-sm text-title dark:text-darkTitle">semi-professional programmer</h2>
+		<h2 class="text-sm text-title dark:text-darkTitle">professional programmer</h2>
 		
 	</div>
 
@@ -54,6 +54,9 @@ const iconComponents = {
 
 	<section class="pt-8">
 	<h2 class="font-medium tracking-tight text-title dark:text-darkTitle">Explore</h2>
-	<Card project={{ id: 1, title: "Populist", description: "Civic engagement as a service", link: "https://populist.us" }} />
+	<Card project={{ id: 1, title: "Populist", description: "Civic engagement as a service", link: "https://populist.us", tags: ["open source"] }} />
+	<Card project={{ id: 2, title: "Driift", description: "Livestreamed interactive concerts", link: "https://driift.live/shows" }} />
+	<Card project={{ id: 2, title: "Uptime", description: "Real time endpoint monitoring", link: "https://github.com/wileymc/uptime", tags: ["open source"] }} />
+	<Card project={{ id: 2, title: "MidiGPT", description: "LLM powered MIDI file generator", link: "https://midigpt.xyz", tags: ["open source"] }} />
 	
 </Layout>

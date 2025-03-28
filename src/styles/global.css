@@ -16,9 +16,9 @@
 }
 
 .dark {
-  --color-bg: #0a0a0a;
-  --color-primary: #4fe294;
-  --color-primary-alpha: #4fe29480;
+  --color-bg: #171616;
+  --color-primary: #28a998;
+  --color-primary-alpha: #28a99880;
   --color-hover: #afbbf210;
   --color-title: #e0e0e0;
   --color-body: #cccccc;
@@ -30,6 +30,10 @@ audio {
   height: 54px;
   border-radius: 8px;
   background-color: var(--color-bg);
+}
+
+audio::-webkit-media-controls-enclosure {
+  border-radius: 0;
 }
 
 /* For Chrome/Safari */
@@ -53,17 +57,16 @@ audio::-webkit-media-controls-volume-slider {
   background-color: var(--color-primary);
 }
 
-.dark audio::-moz-range-track {
+.dark audio::-moz-range-track,
+.dark audio::-webkit-media-controls-enclosure {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Ensure buttons have proper contrast in dark mode */
 .dark audio::-webkit-media-controls-mute-button,
 .dark audio::-webkit-media-controls-play-button,
-.dark audio::-webkit-media-controls-volume-slider-container,
+/* .dark audio::-webkit-media-controls-volume-slider-container, */
 .dark audio::-webkit-media-controls-volume-slider,
-.dark audio::-webkit-media-controls-seek-back-button,
-.dark audio::-webkit-media-controls-seek-forward-button,
 .dark audio::-webkit-media-controls-fullscreen-button,
 .dark audio::-webkit-media-controls-toggle-closed-captions-button,
 .dark audio::-webkit-media-settings-button,

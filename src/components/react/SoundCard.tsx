@@ -46,12 +46,7 @@ export default function SoundCard({ sound }: SoundCardProps) {
         </div>
 
         {/* Native audio player with custom styling */}
-
-        <audio
-          controls
-          src={source}
-          className="w-full focus:outline-none bg-transparent"
-        />
+        <audio controls src={source} className="w-full" />
       </div>
     </div>
   );
