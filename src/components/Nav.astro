@@ -19,30 +19,44 @@ import { MdOutlineKeyboardBackspace } from "react-icons/md";
       opacity: 1;
     }
     
-    /* Style for the placeholder while loading */
-    .doodle-placeholder {
-      display: inline-block;
-      width: 200px;
-      height: 25px;
-      background: transparent;
-    }
   </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Create the script element
-      const doodleScript = document.createElement('script');
-      doodleScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.37.2/css-doodle.min.js';
-      
-      // When the script is loaded
-      doodleScript.onload = () => {
-        // Add the class to show all doodles
+    const loadDoodleScript = () => {
+      if (!document.querySelector('script[src="https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.37.2/css-doodle.min.js"]')) {
+        // Create the script element
+        const doodleScript = document.createElement('script');
+        doodleScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/css-doodle/0.37.2/css-doodle.min.js';
+        
+        // When the script is loaded
+        doodleScript.onload = () => {
+          // Add the class to show all doodles
+          document.body.classList.add('doodle-loaded');
+        };
+        
+        // Append the script to the head
+        document.head.appendChild(doodleScript);
+      } else {
+        // If the script already exists, ensure the class is added
         document.body.classList.add('doodle-loaded');
-      };
-      
-      // Append the script to the head
-      document.head.appendChild(doodleScript);
-    });
+      }
+    };
+
+    const initializeDoodle = () => {
+      loadDoodleScript();
+
+      // Observe DOM changes to re-run the script if necessary
+      const observer = new MutationObserver(() => {
+        if (!document.body.classList.contains('doodle-loaded')) {
+          loadDoodleScript();
+        }
+      });
+
+      observer.observe(document.body, { childList: true, subtree: true });
+    };
+
+    // Ensure the script is loaded on mount
+    initializeDoodle();
   </script>
 
 <nav class="flex items-center justify-between pb-8 tracking-tight">
@@ -50,7 +64,6 @@ import { MdOutlineKeyboardBackspace } from "react-icons/md";
         {
             isHomePage ? (
             <>
-              <div class="doodle-placeholder"></div>
               <css-doodle>
                 {`
                 :doodle {
