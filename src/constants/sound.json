@@ -15,6 +15,12 @@
     "title": "Yuzu",
     "description": "Sometimes I'll pull up an old beat, and rediscover some of the magic I felt when I first made it. This is one of those beats. I hope you enjoy it as much as I do.",
     "thumbnail": "https://picsum.photos/100/300",
-    "source": "/sound/vibey.mp3"
+    "source": "/sound/yuzu.mp3"
+  },
+  {
+    "title": "May I Please Have This Dance?",
+    "description": "A quick beat whipped up in a cheap Atlanta hotel room.",
+    "thumbnail": "https://picsum.photos/100/300",
+    "source": "/sound/may_i_please_have_this_dance.mp3"
   }
 ]

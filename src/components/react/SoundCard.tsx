@@ -16,7 +16,7 @@ export default function SoundCard({ sound }: SoundCardProps) {
   const { title, description, thumbnail, source } = sound;
 
   return (
-    <div className="flex flex-col items-start py-2">
+    <div className="flex flex-col items-start py-2" key={sound.title}>
       <div
         className="group relative -mx-3 w-full transform rounded-lg px-3 py-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hover"
         aria-label={`${title} - ${description}`}
