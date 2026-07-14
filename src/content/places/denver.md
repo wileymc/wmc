@@ -25,6 +25,7 @@ excludeFromNotes: true
 - **Seafood:** Fish and Beer, 
 - **Mexican**: Mister Oso, La Loma, Luchador
 - **Bagels:** Rosenburg's
+- **Burgers:** Dalton's (smash), Grandpa's Burger Haven (greaser), Park Burger (classic)
 
 #### Bars
 - **Dives:** 715 club, The Dive Inn, Walter’s
