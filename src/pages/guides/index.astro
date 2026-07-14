@@ -1,0 +1,49 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { RiArrowRightUpLine } from "react-icons/ri";
+
+const guides = await getCollection("guides");
+
+guides.sort((a, b) => {
+  const dateA = a.data.date?.getTime() ?? 0;
+  const dateB = b.data.date?.getTime() ?? 0;
+
+  if (dateA !== dateB) {
+    return dateB - dateA;
+  }
+
+  return a.data.title.localeCompare(b.data.title);
+});
+---
+
+<Layout title="Wiley McKay Conte • guides">
+  <h1 class="text-[1.75rem] font-serif tracking-tight text-primary font-bold">
+    Guides
+  </h1>
+  <div class="flex items-center gap-1.5 font-medium tracking-tight">
+    <h2 class="text-sm text-title dark:text-darkTitle">
+      useful notes for specific stays and places
+    </h2>
+  </div>
+
+  <section class="pt-4">
+    <div class="flex flex-col">
+      {
+        guides.map((guide) => (
+          <a href={`/guides/${guide.id}`}>
+            <div class="group relative w-full transform rounded-lg p-2 transition-all duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hover">
+              <h3 class="text-[1.5rem] font-medium text-primary">
+                {guide.data.title}
+              </h3>
+              {guide.data.description && (
+                <p class="pt-2 pr-6 text-sm">{guide.data.description}</p>
+              )}
+              <RiArrowRightUpLine className="text-primary absolute top-2 right-2 opacity-0 transition-opacity duration-150 md:group-hover:opacity-100" />
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

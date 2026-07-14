@@ -4,7 +4,7 @@ import { getCollection } from "astro:content";
 import { RiArrowRightUpLine } from "react-icons/ri";
 import { Image } from "astro:assets";
 
-const allNotes = await getCollection("notes");
+const allNotes = await getCollection("places", ({ data }) => !data.excludeFromNotes);
 
 
 allNotes.sort((a: any, b: any) => {
