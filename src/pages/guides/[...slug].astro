@@ -14,6 +14,14 @@ export async function getStaticPaths() {
 const { guide } = Astro.props;
 const { Content } = await render(guide);
 const { title, description, date, tags } = guide.data;
+const publish =
+  "publish" in guide.data
+    ? (guide.data as { publish?: boolean }).publish
+    : true;
+
+if (!publish) {
+  throw new Error(`Guide "${title}" is not published.`);
+}
 ---
 
 <Layout title={`Wiley McKay Conte • ${title}`}>
