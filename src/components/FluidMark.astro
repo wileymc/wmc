@@ -1,32 +1,24 @@
-<glyph-field aria-hidden="true">
+<glyph-field aria-label="Interactive animated character sculpture" role="img">
   <canvas></canvas>
 </glyph-field>
 
 <style>
-  glyph-field {
-    display: block;
-    width: var(--viewport-width, 100%);
-    margin-left: calc((100% - var(--viewport-width, 100%)) / 2);
-    height: clamp(240px, 35vw, 480px);
-    margin-top: 1.5rem;
-    --glyph-ice: #526b87;
-    --glyph-mint: #607f89;
-    --glyph-violet: #747c98;
-  }
-  :global(.dark) glyph-field {
-    --glyph-ice: #a0aecb;
-    --glyph-mint: #9bb6c3;
-    --glyph-violet: #acaac8;
-  }
+  glyph-field { display: block; position: absolute; inset: 0; cursor: crosshair; touch-action: none; }
   canvas { display: block; width: 100%; height: 100%; }
 </style>
 
 <script>
   type Point = [number, number, number];
-  const COLS = 100;
-  const ROWS = 38;
-  const LOOP_SECONDS = 48;
-  const GLYPHS = ['·', ':', '∴', '∷', '+', '×', '≋', '⊹'];
+  type Cell = { char: string; tone: number; alpha: number; back: boolean };
+  const LOOP_SECONDS = 64;
+  const GLYPHS = ['·', ':', '∴', '∷', '+', '×', '≋', '⊹', '⋰', '∶', '/', '⋮'];
+  const COLORS = [[125, 207, 240], [172, 148, 248], [238, 176, 137], [130, 219, 200], [125, 207, 240]];
+  const PALETTE = Array.from({ length: 256 }, (_, i) => {
+    const position = i / 255 * 4;
+    const tone = Math.min(3, Math.floor(position));
+    const blend = position - tone;
+    return `rgb(${COLORS[tone].map((channel, j) => Math.round(channel + (COLORS[tone + 1][j] - channel) * blend)).join(',')})`;
+  });
 
   class GlyphField extends HTMLElement {
     private cleanup?: () => void;
@@ -37,130 +29,130 @@
       const ink = document.createElement('canvas');
       const pen = ink.getContext('2d')!;
       const motion = matchMedia('(prefers-reduced-motion: reduce)');
-      let width = 0, height = 0, dpr = 1, time = 0, request = 0, last = 0;
-      let visible = true;
-      let colors: number[][] = [];
-      const palette = () => {
-        const css = getComputedStyle(this);
-        colors = ['--glyph-ice', '--glyph-mint', '--glyph-violet'].map(key => {
-          const hex = css.getPropertyValue(key).trim().slice(1);
-          return [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
-        });
-      };
+      let width = 0, height = 0, cols = 0, rows = 0, dpr = 1;
+      let time = 0, request = 0, last = 0, held = 0, targetHeld = 0;
+      let mouseX = -1000, mouseY = -1000, turn = 0, tilt = 0, targetTurn = 0, targetTilt = 0;
+      let rippleAge = 10, rippleX = 0, rippleY = 0;
       const rotate = ([x, y, z]: Point, a: number, b: number): Point => {
-        // Rotate in the image plane so the ribbon never collapses edge-on.
         const rx = x * Math.cos(a) - y * Math.sin(a);
         const ry = x * Math.sin(a) + y * Math.cos(a);
         return [rx, ry * Math.cos(b) - z * Math.sin(b), ry * Math.sin(b) + z * Math.cos(b)];
       };
       const paint = () => {
-        const depth = new Float32Array(COLS * ROWS).fill(-Infinity);
-        const cells: { char: string; tone: number; alpha: number; back: boolean }[] = [];
-        // Every motion uses whole harmonics of one phase: both pose and velocity
-        // meet at the loop boundary, without an end frame or fade-out.
-        const phase = time / LOOP_SECONDS * Math.PI * 2;
-        const spin = phase;
-        const tilt = 0.55 + Math.sin(phase * 2) * 0.25;
-        const artWidth = Math.min(width, height * 2.5);
-        const inset = (width - artWidth) / 2;
-        // An open, breathing trefoil made entirely from characters.
-        for (let i = 0; i < 380; i++) {
-          const u = i / 380 * Math.PI * 2;
-          const wave = Math.sin(u * 3 + phase * 3);
-          for (let j = 0; j < 9; j++) {
-            const v = (j / 8 - 0.5);
-            const radius = 1.65 + 0.57 * Math.cos(3 * u + phase) + v * 0.44;
-            const p: Point = [radius * Math.cos(u * 2), radius * Math.sin(u * 2), 0.64 * Math.sin(u * 3) + v * (0.75 + wave * 0.25)];
-            const [x, y, z] = rotate(p, spin, tilt);
-            const perspective = 5 / (5 - z * 0.35);
-            const col = Math.round(COLS / 2 + x * 13.5 * perspective);
-            const row = Math.round(ROWS / 2 + y * 6.4 * perspective);
-            if (col < 0 || col >= COLS || row < 0 || row >= ROWS) continue;
-            const index = row * COLS + col;
-            if (z < depth[index]) continue;
-            depth[index] = z;
-            const light = (z + 2.5) / 5;
-            const edge = Math.abs(v) > 0.35;
-            const texture = (i * 7 + j * 13) % GLYPHS.length;
-            cells[index] = {
-              char: edge ? (light > 0.6 ? '⊹' : '·') : GLYPHS[texture],
-              tone: (Math.sin(u * 2 + phase) + 1) * 0.9999,
-              alpha: Math.min(1, 0.4 + light * 0.65) * (edge ? 0.8 : 1),
-              back: z < -0.3,
-            };
+        if (!width || !height) return;
+        const depth = new Float32Array(cols * rows).fill(-Infinity);
+        const cells: (Cell | undefined)[] = new Array(cols * rows);
+        const phase = (time % LOOP_SECONDS) / LOOP_SECONDS * Math.PI * 2;
+        const spin = phase + turn;
+        const angle = 0.48 + Math.sin(phase * 2) * 0.2 + tilt;
+        const scale = Math.min(width / 5.9, height / 5.4) * (1 + held * 0.16);
+        const project = (p: Point, u: number, v: number, sample: number, strand: number) => {
+          const [x, y, z] = rotate(p, spin, angle);
+          const perspective = 5 / (5 - z * 0.27);
+          let px = width / 2 + x * scale * perspective;
+          let py = height / 2 + y * scale * perspective;
+          const dx = px - mouseX, dy = py - mouseY;
+          const distance = Math.hypot(dx, dy);
+          const force = Math.exp(-distance * distance / 24000) * (22 + held * 32);
+          if (distance > 0.1) { px += dx / distance * force; py += dy / distance * force; }
+          if (rippleAge < 2.5) {
+            const rx = px - rippleX, ry = py - rippleY, radius = Math.hypot(rx, ry);
+            const wave = Math.exp(-Math.pow((radius - rippleAge * 240) / 65, 2)) * (1 - rippleAge / 2.5) * 26;
+            if (radius > 0.1) { px += rx / radius * wave; py += ry / radius * wave; }
           }
-        }
-        // Two sparse satellite arcs keep the negative space alive.
-        for (let arc = 0; arc < 2; arc++) {
-          for (let i = 0; i < 26; i++) {
-            const u = i / 25 * 1.7 + phase * (arc ? -2 : 2);
-            const col = Math.round(COLS / 2 + Math.cos(u + arc * Math.PI) * (36 + arc * 4));
-            const row = Math.round(ROWS / 2 + Math.sin(u + arc * Math.PI) * 11);
-            const index = row * COLS + col;
-            if (col >= 0 && col < COLS && row >= 0 && row < ROWS && !cells[index]) {
-              cells[index] = { char: i % 5 === 0 ? '+' : '·', tone: arc + 1, alpha: Math.sin(i / 25 * Math.PI) * 0.42, back: true };
-            }
-          }
-        }
-        pen.clearRect(0, 0, width, height);
-        pen.font = `500 ${artWidth / COLS * 1.75}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
-        pen.textAlign = 'center';
-        pen.textBaseline = 'middle';
-        ctx.clearRect(0, 0, width, height);
-        // The rear glyphs soften into atmosphere; front glyphs remain legible.
-        const drawGlyphs = (back: boolean) => {
-          pen.clearRect(0, 0, width, height);
-          cells.forEach((cell, index) => {
-            if (cell.back !== back) return;
-            const tone = Math.floor(cell.tone);
-            const mix = cell.tone - tone;
-            const rgb = colors[tone].map((channel, i) => Math.round(channel + (colors[(tone + 1) % colors.length][i] - channel) * mix));
-            pen.fillStyle = `rgb(${rgb.join(',')})`;
-            pen.globalAlpha = cell.alpha;
-            pen.fillText(cell.char, inset + (index % COLS + 0.5) * artWidth / COLS, (Math.floor(index / COLS) + 0.5) * height / ROWS);
-          });
+          const col = Math.round(px / width * cols), row = Math.round(py / height * rows);
+          if (col < 0 || col >= cols || row < 0 || row >= rows) return;
+          const index = row * cols + col;
+          if (z < depth[index]) return;
+          depth[index] = z;
+          const light = Math.max(0, Math.min(1, (z + 2.5) / 5));
+          const edge = Math.abs(v) > 0.42;
+          cells[index] = {
+            char: strand ? (sample % 4 ? '·' : '⊹') : edge ? (light > 0.6 ? '⊹' : '·') : GLYPHS[(sample * 7 + Math.round(v * 100) + 100) % GLYPHS.length],
+            tone: Math.floor((Math.sin(u * 2 + phase + strand * 1.8) + 1) * 127.5),
+            alpha: (0.3 + light * 0.68) * (strand ? 0.56 : edge ? 0.72 : 1),
+            back: z < -0.35,
+          };
         };
-        drawGlyphs(true);
-        ctx.filter = `blur(${artWidth / 637 * 0.7}px)`;
-        ctx.globalAlpha = 0.95;
+        // The broad character ribbon and two fine counterwoven filaments all
+        // share a periodic phase, so the sculpture never reaches an end frame.
+        for (let i = 0; i < 680; i++) {
+          const u = i / 680 * Math.PI * 2;
+          const wave = Math.sin(u * 3 + phase * 3);
+          for (let j = 0; j < 19; j++) {
+            const v = j / 18 - 0.5;
+            const radius = 1.65 + 0.57 * Math.cos(3 * u + phase) + v * (0.5 + held * 0.38);
+            project([radius * Math.cos(u * 2), radius * Math.sin(u * 2), 0.64 * Math.sin(u * 3) + v * (0.75 + wave * 0.25)], u, v, i + j * 3, 0);
+          }
+          for (let strand = 1; strand <= 2; strand++) {
+            const offset = strand * Math.PI;
+            const radius = 2.25 + 0.16 * Math.sin(u * 5 + phase * 2 + offset);
+            project([radius * Math.cos(u + offset), radius * Math.sin(u + offset), 0.85 * Math.sin(u * 3 - phase * 2 + offset)], u, 0, i, strand);
+          }
+        }
+        pen.font = `500 ${Math.max(9, Math.min(13, width / cols * 1.65))}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+        pen.textAlign = 'center'; pen.textBaseline = 'middle';
+        ctx.clearRect(0, 0, width, height);
+        const draw = (back: boolean) => {
+          pen.clearRect(0, 0, width, height);
+          for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            if (!cell || cell.back !== back) continue;
+            pen.fillStyle = PALETTE[cell.tone]; pen.globalAlpha = cell.alpha;
+            pen.fillText(cell.char, (index % cols + 0.5) * width / cols, (Math.floor(index / cols) + 0.5) * height / rows);
+          }
+        };
+        draw(true);
+        ctx.filter = 'blur(1px)'; ctx.globalAlpha = 0.8;
         ctx.drawImage(ink, 0, 0, width, height);
-        drawGlyphs(false);
-        ctx.filter = `blur(${artWidth / 637 * 5}px)`;
-        ctx.globalAlpha = 0.35;
+        draw(false);
+        ctx.filter = 'blur(6px)'; ctx.globalAlpha = 0.4;
         ctx.drawImage(ink, 0, 0, width, height);
-        ctx.filter = 'none';
-        ctx.globalAlpha = 0.95;
+        ctx.filter = 'none'; ctx.globalAlpha = 1;
         ctx.drawImage(ink, 0, 0, width, height);
-        ctx.globalAlpha = 1;
       };
       const resize = () => {
-        this.style.setProperty('--viewport-width', `${document.documentElement.clientWidth}px`);
-        const rect = this.getBoundingClientRect();
-        width = rect.width; height = rect.height;
+        const rect = this.getBoundingClientRect(); width = rect.width; height = rect.height;
+        cols = Math.max(60, Math.min(260, Math.round(width / 7)));
+        rows = Math.max(45, Math.min(140, Math.round(height / 11)));
         dpr = Math.min(devicePixelRatio || 1, 2);
         for (const target of [canvas, ink]) { target.width = Math.round(width * dpr); target.height = Math.round(height * dpr); }
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        pen.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); pen.setTransform(dpr, 0, 0, dpr, 0, 0);
         paint();
       };
+      const move = (event: PointerEvent) => {
+        const rect = this.getBoundingClientRect();
+        mouseX = event.clientX - rect.left; mouseY = event.clientY - rect.top;
+        targetTurn = (mouseX / width - 0.5) * 0.85;
+        targetTilt = (mouseY / height - 0.5) * 0.45;
+      };
+      const down = (event: PointerEvent) => { move(event); targetHeld = 1; rippleAge = 0; rippleX = mouseX; rippleY = mouseY; };
+      const up = () => { targetHeld = 0; };
+      const leave = () => { mouseX = -1000; mouseY = -1000; targetTurn = 0; targetTilt = 0; targetHeld = 0; };
       const tick = (now: number) => {
         if (now - last >= 1000 / 30) {
-          const dt = Math.min((now - (last || now)) / 1000, 0.06);
-          last = now;
-          if (visible && document.visibilityState === 'visible' && !motion.matches) { time = (time + dt) % LOOP_SECONDS; paint(); }
+          const dt = Math.min((now - (last || now)) / 1000, 0.06); last = now;
+          if (document.visibilityState === 'visible') {
+            const ease = 1 - Math.exp(-dt * 4);
+            held += (targetHeld - held) * ease; turn += (targetTurn - turn) * ease; tilt += (targetTilt - tilt) * ease;
+            if (!motion.matches) { time = (time + dt) % LOOP_SECONDS; rippleAge += dt; }
+            else rippleAge = 10;
+            paint();
+          }
         }
         request = requestAnimationFrame(tick);
       };
-      const theme = new MutationObserver(() => { palette(); paint(); });
-      const resizeObserver = new ResizeObserver(resize);
-      const intersection = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; });
-      palette();
-      theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-      resizeObserver.observe(this);
-      window.addEventListener('resize', resize);
-      intersection.observe(this);
+      const observer = new ResizeObserver(resize); observer.observe(this);
+      this.addEventListener('pointermove', move); this.addEventListener('pointerdown', down);
+      this.addEventListener('pointerleave', leave); this.addEventListener('pointercancel', leave);
+      window.addEventListener('pointerup', up);
       request = requestAnimationFrame(tick);
-      this.cleanup = () => { cancelAnimationFrame(request); theme.disconnect(); resizeObserver.disconnect(); intersection.disconnect(); window.removeEventListener('resize', resize); };
+      this.cleanup = () => {
+        cancelAnimationFrame(request); observer.disconnect();
+        this.removeEventListener('pointermove', move); this.removeEventListener('pointerdown', down);
+        this.removeEventListener('pointerleave', leave); this.removeEventListener('pointercancel', leave);
+        window.removeEventListener('pointerup', up);
+      };
     }
     disconnectedCallback() { this.cleanup?.(); }
   }

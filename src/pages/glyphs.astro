@@ -1,0 +1,36 @@
+---
+import '../styles/global.css';
+import FluidMark from '../components/FluidMark.astro';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="An interactive, continuously evolving sculpture made of characters. Move to bend it. Hold to open it." />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>Glyph field · Wiley McKay Conte</title>
+  </head>
+  <body>
+    <main>
+      <FluidMark />
+      <header>
+        <a href="/" aria-label="Back to Wiley's homepage">← wmc</a>
+        <h1>glyph field</h1>
+      </header>
+      <p class="hint">move to bend <span>·</span> hold to unfold</p>
+    </main>
+  </body>
+</html>
+<style>
+  :global(html) { background: #0e121b; color-scheme: dark; }
+  body { margin: 0; color: #c1ccdf; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  main { position: relative; width: 100%; height: 100svh; min-height: 360px; overflow: hidden; background: radial-gradient(ellipse at 50% 45%, #18203370, transparent 65%); }
+  header { position: absolute; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: clamp(20px, 3vw, 40px); pointer-events: none; }
+  header a { pointer-events: auto; font-size: 13px; text-decoration: none; padding: 8px 0; }
+  header a:hover { color: #9bdcf2; }
+  header a:focus-visible { outline: 1px solid #9bdcf2; outline-offset: 6px; }
+  h1 { font: inherit; font-size: 11px; color: #7f8fa9; letter-spacing: 0.08em; }
+  .hint { position: absolute; bottom: 24px; width: 100%; margin: 0; text-align: center; color: #7f8fa9; font-size: 10px; letter-spacing: 0.06em; pointer-events: none; }
+  .hint span { padding: 0 12px; color: #506079; }
+</style>
