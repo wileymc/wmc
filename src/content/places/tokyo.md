@@ -2,7 +2,7 @@
 title: "Tokyo"
 description: "Exploring the vibrant streets, serene temples, and futuristic sights of Japan's capital."
 date: "2025-02-28"
-image: "https://media.cntraveller.com/photos/6343df288d5d266e2e66f082/4:3/w_5332,h_3999,c_limit/tokyoGettyImages-1031467664.jpeg"
+image: "../../assets/notes/tokyo.jpg"
 country: "Japan"
 tags: ["Asia", "Urban", "Culture"]
 slug: "tokyo"

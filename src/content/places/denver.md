@@ -1,12 +1,12 @@
 ---
 title: "Denver"
-description: "Curated house notes and neighborhood suggestions for guests staying in Denver."
+description: "Favorite coffee shops, restaurants, bars, and live music around Denver."
 date: "2026-07-12"
-image: "https://d3id27w0mcelg6.cloudfront.net/proxy/photo_large/DXP001_000163.jpg"
+image: "../../assets/notes/denver.jpg"
 country: "United States"
 tags: ["Denver", "Guide", "Guests"]
 slug: "denver"
-excludeFromNotes: true
+excludeFromNotes: false
 ---
 
 #### Coffee

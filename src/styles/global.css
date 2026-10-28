@@ -3,27 +3,33 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-bg: #f4f4ed;
-  --color-primary: dodgerblue;
-  --color-primary-alpha: #1e90ff80;
-  --color-hover: #1e90ff10;
-  --color-title: #333333;
-  --color-body: #555555;
+  --color-bg: #e9edf0;
+  --color-primary: #526b87;
+  --color-primary-alpha: #526b8740;
+  --color-hover: #526b870c;
+  --color-title: #293743;
+  --color-body: #52616d;
+  --color-on-accent: #ffffff;
   --font-default: initial;
   --font-sans: Excon, sans-serif;
   --font-serif: Erode, serif;
-  --color-audio-text: #333333;
+  --color-audio-text: #293743;
 }
 
 .dark {
-  --color-bg: #171616;
-  --color-primary: #28a998;
-  --color-primary-alpha: #28a99880;
-  --color-hover: #afbbf210;
-  --color-title: #e0e0e0;
-  --color-body: #cccccc;
-  --color-audio-text: #e0e0e0;
+  --color-bg: #171e29;
+  --color-primary: #a0aecb;
+  --color-primary-alpha: #a0aecb40;
+  --color-hover: #a0aecb0c;
+  --color-title: #dce3ed;
+  --color-body: #aeb9ca;
+  --color-on-accent: #171e29;
+  --color-audio-text: #dce3ed;
 }
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+::selection { background: var(--color-primary); color: var(--color-on-accent); }
 
 /* Basic styling for the audio element */
 audio {

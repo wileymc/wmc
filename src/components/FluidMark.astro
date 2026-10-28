@@ -1,0 +1,168 @@
+<glyph-field aria-hidden="true">
+  <canvas></canvas>
+</glyph-field>
+
+<style>
+  glyph-field {
+    display: block;
+    width: var(--viewport-width, 100%);
+    margin-left: calc((100% - var(--viewport-width, 100%)) / 2);
+    height: clamp(240px, 35vw, 480px);
+    margin-top: 1.5rem;
+    --glyph-ice: #526b87;
+    --glyph-mint: #607f89;
+    --glyph-violet: #747c98;
+  }
+  :global(.dark) glyph-field {
+    --glyph-ice: #a0aecb;
+    --glyph-mint: #9bb6c3;
+    --glyph-violet: #acaac8;
+  }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+
+<script>
+  type Point = [number, number, number];
+  const COLS = 100;
+  const ROWS = 38;
+  const LOOP_SECONDS = 48;
+  const GLYPHS = ['·', ':', '∴', '∷', '+', '×', '≋', '⊹'];
+
+  class GlyphField extends HTMLElement {
+    private cleanup?: () => void;
+    connectedCallback() {
+      const canvas = this.querySelector('canvas')!;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      const ink = document.createElement('canvas');
+      const pen = ink.getContext('2d')!;
+      const motion = matchMedia('(prefers-reduced-motion: reduce)');
+      let width = 0, height = 0, dpr = 1, time = 0, request = 0, last = 0;
+      let visible = true;
+      let colors: number[][] = [];
+      const palette = () => {
+        const css = getComputedStyle(this);
+        colors = ['--glyph-ice', '--glyph-mint', '--glyph-violet'].map(key => {
+          const hex = css.getPropertyValue(key).trim().slice(1);
+          return [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
+        });
+      };
+      const rotate = ([x, y, z]: Point, a: number, b: number): Point => {
+        // Rotate in the image plane so the ribbon never collapses edge-on.
+        const rx = x * Math.cos(a) - y * Math.sin(a);
+        const ry = x * Math.sin(a) + y * Math.cos(a);
+        return [rx, ry * Math.cos(b) - z * Math.sin(b), ry * Math.sin(b) + z * Math.cos(b)];
+      };
+      const paint = () => {
+        const depth = new Float32Array(COLS * ROWS).fill(-Infinity);
+        const cells: { char: string; tone: number; alpha: number; back: boolean }[] = [];
+        // Every motion uses whole harmonics of one phase: both pose and velocity
+        // meet at the loop boundary, without an end frame or fade-out.
+        const phase = time / LOOP_SECONDS * Math.PI * 2;
+        const spin = phase;
+        const tilt = 0.55 + Math.sin(phase * 2) * 0.25;
+        const artWidth = Math.min(width, height * 2.5);
+        const inset = (width - artWidth) / 2;
+        // An open, breathing trefoil made entirely from characters.
+        for (let i = 0; i < 380; i++) {
+          const u = i / 380 * Math.PI * 2;
+          const wave = Math.sin(u * 3 + phase * 3);
+          for (let j = 0; j < 9; j++) {
+            const v = (j / 8 - 0.5);
+            const radius = 1.65 + 0.57 * Math.cos(3 * u + phase) + v * 0.44;
+            const p: Point = [radius * Math.cos(u * 2), radius * Math.sin(u * 2), 0.64 * Math.sin(u * 3) + v * (0.75 + wave * 0.25)];
+            const [x, y, z] = rotate(p, spin, tilt);
+            const perspective = 5 / (5 - z * 0.35);
+            const col = Math.round(COLS / 2 + x * 13.5 * perspective);
+            const row = Math.round(ROWS / 2 + y * 6.4 * perspective);
+            if (col < 0 || col >= COLS || row < 0 || row >= ROWS) continue;
+            const index = row * COLS + col;
+            if (z < depth[index]) continue;
+            depth[index] = z;
+            const light = (z + 2.5) / 5;
+            const edge = Math.abs(v) > 0.35;
+            const texture = (i * 7 + j * 13) % GLYPHS.length;
+            cells[index] = {
+              char: edge ? (light > 0.6 ? '⊹' : '·') : GLYPHS[texture],
+              tone: (Math.sin(u * 2 + phase) + 1) * 0.9999,
+              alpha: Math.min(1, 0.4 + light * 0.65) * (edge ? 0.8 : 1),
+              back: z < -0.3,
+            };
+          }
+        }
+        // Two sparse satellite arcs keep the negative space alive.
+        for (let arc = 0; arc < 2; arc++) {
+          for (let i = 0; i < 26; i++) {
+            const u = i / 25 * 1.7 + phase * (arc ? -2 : 2);
+            const col = Math.round(COLS / 2 + Math.cos(u + arc * Math.PI) * (36 + arc * 4));
+            const row = Math.round(ROWS / 2 + Math.sin(u + arc * Math.PI) * 11);
+            const index = row * COLS + col;
+            if (col >= 0 && col < COLS && row >= 0 && row < ROWS && !cells[index]) {
+              cells[index] = { char: i % 5 === 0 ? '+' : '·', tone: arc + 1, alpha: Math.sin(i / 25 * Math.PI) * 0.42, back: true };
+            }
+          }
+        }
+        pen.clearRect(0, 0, width, height);
+        pen.font = `500 ${artWidth / COLS * 1.75}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
+        pen.textAlign = 'center';
+        pen.textBaseline = 'middle';
+        ctx.clearRect(0, 0, width, height);
+        // The rear glyphs soften into atmosphere; front glyphs remain legible.
+        const drawGlyphs = (back: boolean) => {
+          pen.clearRect(0, 0, width, height);
+          cells.forEach((cell, index) => {
+            if (cell.back !== back) return;
+            const tone = Math.floor(cell.tone);
+            const mix = cell.tone - tone;
+            const rgb = colors[tone].map((channel, i) => Math.round(channel + (colors[(tone + 1) % colors.length][i] - channel) * mix));
+            pen.fillStyle = `rgb(${rgb.join(',')})`;
+            pen.globalAlpha = cell.alpha;
+            pen.fillText(cell.char, inset + (index % COLS + 0.5) * artWidth / COLS, (Math.floor(index / COLS) + 0.5) * height / ROWS);
+          });
+        };
+        drawGlyphs(true);
+        ctx.filter = `blur(${artWidth / 637 * 0.7}px)`;
+        ctx.globalAlpha = 0.95;
+        ctx.drawImage(ink, 0, 0, width, height);
+        drawGlyphs(false);
+        ctx.filter = `blur(${artWidth / 637 * 5}px)`;
+        ctx.globalAlpha = 0.35;
+        ctx.drawImage(ink, 0, 0, width, height);
+        ctx.filter = 'none';
+        ctx.globalAlpha = 0.95;
+        ctx.drawImage(ink, 0, 0, width, height);
+        ctx.globalAlpha = 1;
+      };
+      const resize = () => {
+        this.style.setProperty('--viewport-width', `${document.documentElement.clientWidth}px`);
+        const rect = this.getBoundingClientRect();
+        width = rect.width; height = rect.height;
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        for (const target of [canvas, ink]) { target.width = Math.round(width * dpr); target.height = Math.round(height * dpr); }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        pen.setTransform(dpr, 0, 0, dpr, 0, 0);
+        paint();
+      };
+      const tick = (now: number) => {
+        if (now - last >= 1000 / 30) {
+          const dt = Math.min((now - (last || now)) / 1000, 0.06);
+          last = now;
+          if (visible && document.visibilityState === 'visible' && !motion.matches) { time = (time + dt) % LOOP_SECONDS; paint(); }
+        }
+        request = requestAnimationFrame(tick);
+      };
+      const theme = new MutationObserver(() => { palette(); paint(); });
+      const resizeObserver = new ResizeObserver(resize);
+      const intersection = new IntersectionObserver(entries => { visible = entries[0].isIntersecting; });
+      palette();
+      theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      resizeObserver.observe(this);
+      window.addEventListener('resize', resize);
+      intersection.observe(this);
+      request = requestAnimationFrame(tick);
+      this.cleanup = () => { cancelAnimationFrame(request); theme.disconnect(); resizeObserver.disconnect(); intersection.disconnect(); window.removeEventListener('resize', resize); };
+    }
+    disconnectedCallback() { this.cleanup?.(); }
+  }
+  if (!customElements.get('glyph-field')) customElements.define('glyph-field', GlyphField);
+</script>

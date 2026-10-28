@@ -22,12 +22,12 @@ export default function Card({ project }: ProjectCardProps) {
         href={link}
         target="_blank"
         rel="noreferrer"
-        className="group relative -mx-3 w-full rounded-lg px-3 py-2 transition-transform duration-300 ease-in-out md:hover:scale-102 md:hover:bg-hover"
+        className="group relative -mx-3 w-[calc(100%+1.5rem)] rounded-lg px-3 py-2 transition-transform duration-150 ease-out md:hover:scale-[1.02] motion-reduce:transition-none motion-reduce:transform-none hover:bg-hover focus-visible:bg-hover focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
         aria-label={`${title} - ${description}`}
       >
         <div className="flex items-center justify-between text-sm font-medium tracking-tight text-title dark:text-darkTitle">
           <div className="flex items-center justify-between w-full">
-            <h3 className="transition-colors duration-300 md:group-hover:text-primary">
+            <h3 className="group-hover:text-primary group-focus-visible:text-primary">
               {title}
             </h3>
             {tags && (
@@ -35,7 +35,7 @@ export default function Card({ project }: ProjectCardProps) {
                 {tags.map((tag) => (
                   <span
                     key={tag}
-                    className="mr-1 inline-block rounded-full bg-primary px-2 py-1 text-white text-[0.65rem]"
+                    className="mr-1 inline-block rounded-full bg-primary px-2 py-1 text-on-accent text-[0.65rem]"
                   >
                     {tag}
                   </span>
@@ -44,7 +44,7 @@ export default function Card({ project }: ProjectCardProps) {
             )}
           </div>
           <RiArrowRightUpLine
-            className="ml-0.5 text-primary opacity-0 transition-opacity duration-300 md:group-hover:opacity-100"
+            className="ml-0.5 shrink-0 text-primary opacity-50 group-hover:opacity-100 group-focus-visible:opacity-100"
             aria-hidden="true"
           />
         </div>
